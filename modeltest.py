@@ -22,7 +22,7 @@
 #############################################################################
 
 import sip
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 # This was originally a Trolltech file.  The QBzr folks did some work to
 # bring it up to date, and I've done some work on top of theirs to fix a few
@@ -47,25 +47,25 @@ class ModelTest(QtCore.QObject):
         self.fetchingMore = False
         assert(self.model)
 
-        self.connect( self.model, QtCore.SIGNAL("columnsAboutToBeInserted(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("columnsAboutToBeRemoved(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("columnsBeInserted(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("columnsRemoved(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("dataChanged(const QModelIndex&, const QModelIndex&)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("headerDataChanged(Qt::Orientation, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("layoutAboutToBeChanged()"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("layoutChanged()"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("modelReset()"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("rowsAboutToBeInserted(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("rowsAboutToBeRemoved(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("rowsBeInserted(const QModelIndex&, int, int)"), self.runAllTests)
-        self.connect( self.model, QtCore.SIGNAL("rowsRemoved(const QModelIndex&, int, int)"), self.runAllTests)
+        self.model.columnsAboutToBeInserted.connect(self.runAllTests)
+        self.model.columnsAboutToBeRemoved.connect(self.runAllTests)
+        self.model.columnsInserted.connect(self.runAllTests)
+        self.model.columnsRemoved.connect(self.runAllTests)
+        self.model.dataChanged.connect(self.runAllTests)
+        self.model.headerDataChanged.connect(self.runAllTests)
+        self.model.layoutAboutToBeChanged.connect(self.runAllTests)
+        self.model.layoutChanged.connect(self.runAllTests)
+        self.model.modelReset.connect(self.runAllTests)
+        self.model.rowsAboutToBeInserted.connect(self.runAllTests)
+        self.model.rowsAboutToBeRemoved.connect(self.runAllTests)
+        self.model.rowsInserted.connect(self.runAllTests)
+        self.model.rowsRemoved.connect(self.runAllTests)
 
         # Special checks for inserting/removing
-        self.connect( self.model, QtCore.SIGNAL("rowsAboutToBeInserted(const QModelIndex&, int, int)"), self.rowsAboutToBeInserted)
-        self.connect( self.model, QtCore.SIGNAL("rowsAboutToBeRemoved(const QModelIndex&, int, int)"), self.rowsAboutToBeRemoved)
-        self.connect( self.model, QtCore.SIGNAL("rowsBeInserted(const QModelIndex&, int, int)"), self.rowsInserted)
-        self.connect( self.model, QtCore.SIGNAL("rowsRemoved(const QModelIndex&, int, int)"), self.rowsRemoved)
+        self.model.rowsAboutToBeInserted.connect(self.rowsAboutToBeInserted)
+        self.model.rowsAboutToBeRemoved.connect(self.rowsAboutToBeRemoved)
+        self.model.rowsInserted.connect(self.rowsInserted)
+        self.model.rowsRemoved.connect(self.rowsRemoved)
         self.runAllTests()
 
     def nonDestructiveBasicTest(self):
@@ -199,7 +199,7 @@ class ModelTest(QtCore.QObject):
         assert(self.model.parent(QtCore.QModelIndex()) == QtCore.QModelIndex())
 
         if self.model.rowCount(QtCore.QModelIndex()) == 0:
-            return;
+            return
 
         # Column 0              | Column 1  |
         # QtCore.Qself.modelIndex()         |           |
@@ -235,7 +235,8 @@ class ModelTest(QtCore.QObject):
         Tests self.model's implementation of QtCore.QAbstractItemModel::data()
         """
         # Invalid index should return an invalid qvariant
-        assert( not self.model.data(QtCore.QModelIndex(), QtCore.Qt.DisplayRole).isValid())
+        qvar = self.model.data(QtCore.QModelIndex(), QtCore.Qt.DisplayRole)
+        assert(not qvar.isValid())
 
         if self.model.rowCount(QtCore.QModelIndex()) == 0:
             return
@@ -366,7 +367,7 @@ class ModelTest(QtCore.QObject):
         those tests then this one
         """
         # First just try walking back up the tree.
-        p = parent;
+        p = parent
         while p.isValid():
             p = p.parent()
 
@@ -452,5 +453,3 @@ class ModelTest(QtCore.QObject):
                 # Make sure that after testing the children that the index doesn't change
                 newIdx = self.model.index(r,c,parent)
                 assert(index == newIdx)
-
-
