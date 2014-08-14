@@ -112,7 +112,8 @@ class ModelTest(QtCore.QObject):
         rows = self.model.rowCount(topindex)
         assert(rows >= 0)
         if rows > 0:
-            assert(self.model.hasChildren(topindex) == True )
+            hasChildren = self.model.hasChildren(topindex)
+            assert(hasChildren is True)
 
         secondlvl = self.model.index(0,0,topindex)
         if secondlvl.isValid():
@@ -236,7 +237,7 @@ class ModelTest(QtCore.QObject):
         """
         # Invalid index should return an invalid qvariant
         qvar = self.model.data(QtCore.QModelIndex(), QtCore.Qt.DisplayRole)
-        assert(not qvar.isValid())
+        assert(qvar is None)
 
         if self.model.rowCount(QtCore.QModelIndex()) == 0:
             return
@@ -249,42 +250,42 @@ class ModelTest(QtCore.QObject):
 
         # General Purpose roles that should return a QString
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.ToolTipRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.String ) )
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.StatusTipRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.String ) )
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.WhatsThisRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.String ) )
 
         # General Purpose roles that should return a QSize
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.SizeHintRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.Size ) )
 
         # General Purpose roles that should return a QFont
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.FontRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.Font ) )
 
         # Check that the alignment is one we know about
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.TextAlignmentRole)
-        if variant.isValid():
+        if variant is not None:
             alignment = variant.toInt()[0]
             assert( alignment == (alignment & int(QtCore.Qt.AlignHorizontal_Mask | QtCore.Qt.AlignVertical_Mask)))
 
         # General Purpose roles that should return a QColor
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.BackgroundColorRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.Color ) )
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.TextColorRole)
-        if variant.isValid():
+        if variant is not None:
             assert( variant.canConvert( QtCore.QVariant.Color ) )
 
         # Check that the "check state" is one we know about.
         variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.CheckStateRole)
-        if variant.isValid():
+        if variant is not None:
             state = variant.toInt()[0]
             assert( state == QtCore.Qt.Unchecked or
                 state == QtCore.Qt.PartiallyChecked or
@@ -294,13 +295,28 @@ class ModelTest(QtCore.QObject):
     def runAllTests(self):
         if self.fetchingMore:
             return
+
         self.nonDestructiveBasicTest()
+        print("passed nonDestructiveBasicTest")
+
         self.rowCount()
+        print("passed rowCount")
+
         self.columnCount()
+        print("passed columnCount")
+
         self.hasIndex()
+        print("passed hasIndex")
+
         self.index()
+        print("passed index")
+
         self.parent()
+        print("passed parent")
+
         self.data()
+        print("passed data")
+        print("------------------------------")
 
     def rowsAboutToBeInserted(self, parent, start, end):
         """
@@ -423,7 +439,7 @@ class ModelTest(QtCore.QObject):
                 assert( index.column() == c )
                 # While you can technically return a QtCore.QVariant usually this is a sign
                 # if an bug in data() Disable if this really is ok in your self.model
-                assert( self.model.data(index, QtCore.Qt.DisplayRole).isValid() == True )
+                assert(self.model.data(index, QtCore.Qt.DisplayRole) is not None)
 
                 #if the next test fails here is some somehwat useful debug you play with
                 # if self.model.parent(index) != parent:

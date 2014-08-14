@@ -1,17 +1,23 @@
-from PyQt5.QtCore import Qt, QAbstractListModel, pyqtSlot, QVariant
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import print_function
+import random
+
+from PyQt5.QtCore import Qt, QAbstractListModel, QVariant, pyqtSlot, QModelIndex
 
 from modeltest import ModelTest
 
 
-class TestModel(QAbstractListModel):
+class DummyModel(QAbstractListModel):
 
-    ROLES = ()
+    ROLES = ('hello',)
     _ROLE_MAP = {}
 
     def __init__(self, parent=None):
         self._init_roles()
         self._items = []
-        super(TestModel, self).__init__(parent)
+        super(DummyModel, self).__init__(parent)
 
     def _init_roles(self):
         keys = list(range(Qt.UserRole + 1, Qt.UserRole + 1 + len(self.ROLES)))
@@ -20,14 +26,17 @@ class TestModel(QAbstractListModel):
     def roleNames(self):
         return self._ROLE_MAP
 
-    @pyqtSlot(result=int)
+    @pyqtSlot(QModelIndex, result=int)
     def rowCount(self, parent=None):
+        #if parent is None or not parent.isValid():
+            #return 0
         return len(self._items)
 
-    def data(self, index, role):
-        #if role == Qt.DisplayRole:  # http://stackoverflow.com/a/2334179/858766
-            #return index.internalPointer()
+    #@pyqtSlot(QModelIndex, result=bool)
+    #def hasChildren(self, parent=None):
+        #return self.rowCount(parent) > 0
 
+    def data(self, index, role):
         # sanity checks
         if not index.isValid():
             return QVariant()
@@ -36,11 +45,26 @@ class TestModel(QAbstractListModel):
             return QVariant()
 
         # get item & value
-        attr = self._ROLE_MAP[role]
-        item = self._items[index]
-        value = getattr(item, attr)
+        #attr = self._ROLE_MAP[role]
+        #item = self._items[index.row()]
+        #value = getattr(item, attr)
+        #return value
+        return self._items[index.row()]
 
-        return value
+    @pyqtSlot(int)
+    def add_random_items(self, n):
+        self.beginInsertRows(
+            QModelIndex(), self.rowCount(), self.rowCount() + n - 1)
+        self._items.extend([random.randint(1, 100) for _ in range(n)])
+        self.endInsertRows()
 
-model = TestModel()
-modeltest = ModelTest(model)
+
+def run():
+    model = DummyModel()
+    modeltest = ModelTest(model)  # will trigger recheck on every model change
+
+    model.add_random_items(5)
+
+
+if __name__ == '__main__':
+    run()
