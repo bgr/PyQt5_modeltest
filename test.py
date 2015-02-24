@@ -25,7 +25,7 @@ class DummyModel(QAbstractListModel):
         #return self._ROLE_MAP
 
     def rowCount(self, parent=None):
-        if not parent.isValid():
+        if not parent or not parent.isValid():
             return len(self._storage)
         return 0
 
@@ -59,14 +59,26 @@ class DummyModel(QAbstractListModel):
 
 def run():
     model = DummyModel()
-    modeltest = ModelTest(model)  # will trigger recheck on every model change
 
-    for i in range(5):
+    # pass the model to ModelTest, it will automatically trigger recheck on
+    # every model change; note that it must be assigned to variable to avoid gc
+    modeltest = ModelTest(model, verbose=False)
+
+    element_count = 20
+
+    # insert and remove at the beginning
+    for i in range(element_count):
         model.insertRows(0, i, None)
 
-    for i in range(5):
+    for i in range(element_count):
         model.removeRows(0, i, None)
 
+    # insert and remove from the end
+    for i in range(element_count):
+        model.insertRows(model.rowCount(), i, None)
+
+    for i in range(element_count):
+        model.removeRows(model.rowCount() - i, i, None)
 
 
 if __name__ == '__main__':

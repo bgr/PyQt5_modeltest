@@ -35,7 +35,7 @@ from PyQt5 import QtCore, QtGui
 #        self.modeltest = ModelTest(model, self)
 
 class ModelTest(QtCore.QObject):
-    def __init__(self, _model, parent=None):
+    def __init__(self, _model, verbose=True, parent=None):
         """
         Connect to all of the models signals, Whenever anything happens recheck everything.
         """
@@ -45,6 +45,7 @@ class ModelTest(QtCore.QObject):
         self.insert = []
         self.remove = []
         self.fetchingMore = False
+        self._verbose = verbose
         assert(self.model)
 
         self.model.columnsAboutToBeInserted.connect(self.runAllTests)
@@ -297,26 +298,26 @@ class ModelTest(QtCore.QObject):
             return
 
         self.nonDestructiveBasicTest()
-        print("passed nonDestructiveBasicTest")
+        print("passed nonDestructiveBasicTest") if self._verbose else None
 
         self.rowCount()
-        print("passed rowCount")
+        print("passed rowCount") if self._verbose else None
 
         self.columnCount()
-        print("passed columnCount")
+        print("passed columnCount") if self._verbose else None
 
         self.hasIndex()
-        print("passed hasIndex")
+        print("passed hasIndex") if self._verbose else None
 
         self.index()
-        print("passed index")
+        print("passed index") if self._verbose else None
 
         self.parent()
-        print("passed parent")
+        print("passed parent") if self._verbose else None
 
         self.data()
-        print("passed data")
-        print("------------------------------")
+        print("passed data") if self._verbose else None
+        print("------------------------------") if self._verbose else None
 
     def rowsAboutToBeInserted(self, parent, start, end):
         """
