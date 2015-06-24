@@ -250,48 +250,35 @@ class ModelTest(QtCore.QObject):
         assert( self.model.setData( QtCore.QModelIndex(), QtCore.QVariant("foo"), QtCore.Qt.DisplayRole) == False)
 
         # General Purpose roles that should return a QString
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.ToolTipRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.String ) )
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.StatusTipRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.String ) )
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.WhatsThisRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.String ) )
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.ToolTipRole)
+        assert data is None or isinstance(data, str)
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.StatusTipRole)
+        assert data is None or isinstance(data, str)
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.WhatsThisRole)
+        assert data is None or isinstance(data, str)
 
         # General Purpose roles that should return a QSize
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.SizeHintRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.Size ) )
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.SizeHintRole)
+        assert data is None or isinstance(data, QtCore.QSize)
 
         # General Purpose roles that should return a QFont
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.FontRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.Font ) )
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.FontRole)
+        assert data is None or isinstance(data, QtGui.QFont)
 
         # Check that the alignment is one we know about
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.TextAlignmentRole)
-        if variant is not None:
-            alignment = variant.toInt()[0]
+        alignment = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.TextAlignmentRole)
+        if alignment is not None:
             assert( alignment == (alignment & int(QtCore.Qt.AlignHorizontal_Mask | QtCore.Qt.AlignVertical_Mask)))
 
         # General Purpose roles that should return a QColor
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.BackgroundColorRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.Color ) )
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.TextColorRole)
-        if variant is not None:
-            assert( variant.canConvert( QtCore.QVariant.Color ) )
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.BackgroundColorRole)
+        assert data is None or isinstance(data, QtGui.QColor)
+        data = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.TextColorRole)
+        assert data is None or isinstance(data, QtGui.QColor)
 
         # Check that the "check state" is one we know about.
-        variant = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.CheckStateRole)
-        if variant is not None:
-            state = variant.toInt()[0]
-            assert( state == QtCore.Qt.Unchecked or
-                state == QtCore.Qt.PartiallyChecked or
-                state == QtCore.Qt.Checked )
-
+        state = self.model.data(self.model.index(0,0,QtCore.QModelIndex()), QtCore.Qt.CheckStateRole)
+        assert state in [None, QtCore.Qt.Unchecked, QtCore.Qt.PartiallyChecked, QtCore.Qt.Checked]
 
     def runAllTests(self):
         if self.fetchingMore:
