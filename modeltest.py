@@ -433,7 +433,7 @@ class ModelTest(QtCore.QObject):
                 assert( a == b )
 
                 # Some basic checking on the index that is returned
-                # assert( index.model() == self.model )
+                assert( index.model() == self._model )
                 # This raises an error that is not part of the qbzr code.
                 # see http://www.opensubscriber.com/message/pyqt@riverbankcomputing.com/10335500.html
                 assert( index.row() == r )
