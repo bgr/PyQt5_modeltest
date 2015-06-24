@@ -4,7 +4,8 @@
 from __future__ import print_function
 
 from PyQt5.QtCore import (Qt, QAbstractListModel, QVariant, QModelIndex,
-                          QSortFilterProxyModel)
+                          QSortFilterProxyModel, QSize)
+from PyQt5.QtGui import QColor, QFont
 
 from modeltest import ModelTest
 import random
@@ -41,6 +42,18 @@ class DummyModel(QAbstractListModel):
 
         if role == Qt.DisplayRole:
             return self._storage[index.row()]
+        elif role in [Qt.ToolTipRole, Qt.StatusTipRole, Qt.WhatsThisRole]:
+            return "foobar"
+        elif role == Qt.SizeHintRole:
+            return QSize()
+        elif role == Qt.FontRole:
+            return QFont()
+        elif role == Qt.TextAlignmentRole:
+            return Qt.AlignLeft
+        elif role in [Qt.BackgroundColorRole, Qt.TextColorRole]:
+            return QColor()
+        elif role == Qt.CheckStateRole:
+            return Qt.Checked
         else:
             return QVariant()
 
